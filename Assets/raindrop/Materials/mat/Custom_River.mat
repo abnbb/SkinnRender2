@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Custom_River
+  m_Shader: {fileID: 4800000, guid: d3a9ea07175a2f64eb5a41f82389768a, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 3000
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _HeightMap:
+        m_Texture: {fileID: 8400000, guid: 0d4c51de646b2a64ca3132447a69b145, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HeightMap2:
+        m_Texture: {fileID: 2800000, guid: 2182bd2c7322958419cba1886f0039c5, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Heightmask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NoramlMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ReflectionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _flowMap:
+        m_Texture: {fileID: 2800000, guid: 9e0fd32645c6e1545bfbfdb3188fa508, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _MaxCircleSize: 0.22
+    - _MinCircleSize: 0.1
+    - _NeedDraw: 0
+    - _NormalStrength: 1.83
+    - _PointSize: 0.02
+    - _RippleWidth: 0.001
+    - _a: 0.9
+    - _rippleFadeTime: 1
+    m_Colors:
+    - _Color: {r: 0, g: 0.34463817, b: 0.3679245, a: 1}
+    - _PointColor: {r: 1, g: 1, b: 1, a: 1}
+    - _RippleColor: {r: 0.25013348, g: 0.6949253, b: 0.7264151, a: 1}
+    - _TargetUV: {r: 0, g: 0, b: 0, a: 0}
+  m_BuildTextureStacks: []
