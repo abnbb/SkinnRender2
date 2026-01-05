@@ -8,11 +8,19 @@ Shader "Custom/River"
         _HeightMap2("Height Map2",2D) = "black"{}
         _flowMap("FlowMap",2D) = "black"{}
         _NormalStrength("HeightNormalStrength",Range(0,10)) = 0.1
+        _ReflectMap ("ReflectMap", Cube) = "white" {} // 反射立方体贴图
+        _ReflectStrength ("ReflectStrength", Range(0, 1)) = 0.7 // 反射混合比例
+        _ReflecRoughness ("ReflecRoughness", Range(0, 1)) = 0 // 反射模糊度（0=模糊，1=清晰）
 
     }
     SubShader
     {
-        Tags { "RenderType"="Transparent" }
+        Tags
+        {
+            "RenderType"="Transparent" // 半透明渲染（水面）
+            "Queue"="Transparent" // 渲染队列（半透明物体后渲染）
+            "RenderPipeline"="UniversalPipeline" // 标记为URP管线
+        }
         Zwrite Off
 
         LOD 100
@@ -47,7 +55,7 @@ Shader "Custom/River"
         //     sampler2D _HeightMap;
         //     sampler2D _Heightmask;
         //     sampler2D _HeightMap2;
-        //     sampler2D _ReflectionMap;
+        //     samplerCUBE _ReflectMap;
         //     sampler2D _flowMap;
         //     float4 _HeightMap_ST;
         //     float4 _Color;
@@ -101,14 +109,15 @@ Shader "Custom/River"
         //         half3 H = normalize(L+V);
         //         // half3 L = normalize(half3(1,0,1));
         //         half3 N = normalize(N1*1.5+N2);
+        //         half3 R = normalize(reflect(-V,N));
         //         half diff = saturate(max(dot(L,N),0));
         //         half spec = pow(max(dot(H,N),0),8);
 
         //         half3 c = lerp(_Color,_RippleColor,depth);
         //         half3 basecolor = diff*c+10*spec*_RippleColor;
 
-        //         half3 reflectColor = tex2D(_ReflectionMap,float2(screenUV.x,1-screenUV.y));
-
+        //         //half3 reflectColor = tex2D(_ReflectionMap,float2(screenUV.x,1-screenUV.y));
+        //         half3 reflectColor = texCUBE(_ReflectMap,R).rgb;
         //         // basecolor+=smoothstep(0.01,0,depth)*_RippleColor;
         //         return  half4(basecolor,0.5+pow(0.4-depth,3));
         //         // return pow(max(dot(H,N),0),8);
@@ -119,7 +128,6 @@ Shader "Custom/River"
 
 
         Pass{
-            ZWrite On
             Cull Back
             Blend SrcAlpha OneMinusSrcAlpha
 
@@ -148,7 +156,7 @@ Shader "Custom/River"
             TEXTURE2D(_HeightMap);SAMPLER(sampler_HeightMap);
             TEXTURE2D(_Heightmask);SAMPLER(sampler_Heightmask);
             TEXTURE2D(_HeightMap2);SAMPLER(sampler_HeightMap2);
-            TEXTURE2D(_ReflectionMap);SAMPLER(sampler_ReflectionMap);
+            //TEXTURE2D(_ReflectMap);SAMPLER(sampler_ReflectMap);
             TEXTURE2D(_flowMap);SAMPLER(sampler_flowMap);
             CBUFFER_START(UnityPerMaterial)
                 float4 _HeightMap_ST;
@@ -156,6 +164,9 @@ Shader "Custom/River"
                 float4 _RippleColor;
                 float _NormalStrength;
                 float4 _HeightMap_TexelSize;
+                float _ReflectStrength;
+                float _ReflecRoughness;
+                samplerCUBE  _ReflectMap;
             CBUFFER_END
 
 
@@ -217,9 +228,9 @@ Shader "Custom/River"
                 // sample the texture
                 half3 h = SAMPLE_TEXTURE2D(_HeightMap, sampler_HeightMap,i.uv).r;
                 half3 N1 = HeightToNormal(i.uv);
-                float2 Fdirc = SAMPLE_TEXTURE2D(_flowMap,sampler_flowMap,i.uv*10+float2(_Time.y,0)).rg;
+                float2 Fdirc = SAMPLE_TEXTURE2D(_flowMap,sampler_flowMap,i.uv*10+0.5*float2(_Time.y,0)).rg;
                 // float depth = 
-                half3 N2 = HeightToNormal2(i.uv*0.7+Fdirc*0.01+float2(_Time.y,0)*0.001);
+                half3 N2 = HeightToNormal2(i.uv*0.5 +Fdirc*0.01 +float2(_Time.y,0)*0.01);
                 half3 V = normalize(_WorldSpaceCameraPos-i.posWS);
 
                 Light mainLight = GetMainLight();
@@ -228,17 +239,23 @@ Shader "Custom/River"
                 half3 H = normalize(L+V);
                 // half3 L = normalize(half3(1,0,1));
                 half3 N = normalize(N1*1.5+N2);
+
+                float3 R = normalize(reflect(V, N));
                 half diff = saturate(max(dot(L,N),0));
                 half spec = pow(max(dot(H,N),0),8);
 
                 half3 c = lerp(_Color,_RippleColor,depth);
                 half3 basecolor = diff*c+50*spec*LColor;
 
+                half3 reflectColor = texCUBElod(_ReflectMap,  float4(R, _ReflecRoughness * 10)).rgb;
+                basecolor = lerp(basecolor,reflectColor.rgb,_ReflectStrength);
+
                 // half3 reflectColor = SAMPLE_TEXTURE2D(_ReflectionMap,sampler_ReflectionMap,float2(screenUV.x,0.8*(1-screenUV.y)));
                 // float screenZ = Linear01Depth(SampleSceneDepth(screenUV),_ZBufferParams);
-                half3 finalColor = basecolor;
+                half3 finalColor = basecolor*LColor;
+                half finalAlpha = 0.5+pow(0.3-depth,3);
                 // basecolor+=smoothstep(0.01,0,depth)*_RippleColor;
-                return  half4(finalColor*LColor,0.5+pow(0.3-depth,3));
+                return  half4(finalColor,finalAlpha);
                 // return half4(depth,0,0,1);
                 
             }

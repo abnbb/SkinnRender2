@@ -40,6 +40,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _ReflectMap:
+        m_Texture: {fileID: 8900000, guid: a8ac39f5e038eec40a429e37a7c93aa7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _ReflectionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -53,9 +57,15 @@ Material:
     - _MaxCircleSize: 0.22
     - _MinCircleSize: 0.1
     - _NeedDraw: 0
-    - _NormalStrength: 1.83
+    - _NormalStrength: 3
     - _PointSize: 0.02
+    - _ReflecRoughness: 0.034
+    - _ReflecSmoothness: 0.885
+    - _ReflectSmoothness: 0.9
+    - _ReflectStrength: 0.376
     - _RippleWidth: 0.001
+    - _Smoothness: 0.9
+    - __ReflecSmoothness: 0.9
     - _a: 0.9
     - _rippleFadeTime: 1
     m_Colors:
